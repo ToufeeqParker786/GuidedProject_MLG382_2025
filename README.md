@@ -48,7 +48,7 @@ This notebook contains:
 
 ---
 
-### `web_application.ipynb`
+### `Dashboard.py`
 This notebook includes:
 
 - Code for the Streamlit interface.
