@@ -337,3 +337,198 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
+
+st.markdown("<h3 style='color: #ff0000;'>Model Performance - Confusion Matrices</h3>", unsafe_allow_html=True)
+
+def prepare_model_data(df):
+    features = ['StudyTimeWeekly', 'Absences', 'ParentalSupport', 'Tutoring', 
+                'Extracurricular', 'Sports', 'Music', 'Volunteering']
+    
+    median_gpa = df['GPA'].median()
+    df['HighGPA'] = (df['GPA'] > median_gpa).astype(int)
+    
+    X = df[features].astype(float)
+    y = df['HighGPA']
+    
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    return X_train, X_test, y_train, y_test
+
+if len(filtered_df) > 10:
+    try:
+        X_train, X_test, y_train, y_test = prepare_model_data(filtered_df)
+
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
+
+        lr_model = LogisticRegression(random_state=42, max_iter=1000)
+        lr_model.fit(X_train, y_train)
+        y_pred_lr = lr_model.predict(X_test)
+        cm_lr = confusion_matrix(y_test, y_pred_lr)
+
+        rf_model = RandomForestClassifier(random_state=42)
+        rf_model.fit(X_train, y_train)
+        y_pred_rf = rf_model.predict(X_test)
+        cm_rf = confusion_matrix(y_test, y_pred_rf)
+
+        col_cm1, col_cm2 = st.columns(2)
+
+        with col_cm1:
+            st.markdown("<h4 style='color: #ff0000; text-align: center;'>Logistic Regression</h4>", unsafe_allow_html=True)
+            
+            fig_cm_lr = go.Figure(data=go.Heatmap(
+                z=cm_lr,
+                x=['Predicted Low GPA', 'Predicted High GPA'],
+                y=['Actual Low GPA', 'Actual High GPA'],
+                colorscale='Reds',
+                showscale=True
+            ))
+            
+            fig_cm_lr.update_layout(
+                template='plotly_dark',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                title_font_color='#ff0000',
+                xaxis_title="Predicted",
+                yaxis_title="Actual",
+                xaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
+                yaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
+                title=dict(
+                    text='logistic Regression Confusion Matrix',
+                    font=dict(color='#ff0000', size=12),
+                    x=0.5,
+                    y=0.95
+                ),
+                height=500,
+                width=None,
+                autosize=True,
+                margin=dict(l=80, r=80, t=80, b=80)
+            )
+            
+            st.plotly_chart(fig_cm_lr, use_container_width=True, config={'displayModeBar': False})
+            
+            accuracy = accuracy_score(y_test, y_pred_lr)
+            precision = precision_score(y_test, y_pred_lr)
+            recall = recall_score(y_test, y_pred_lr)
+            f1 = f1_score(y_test, y_pred_lr)
+            
+            st.markdown(f"""
+            <div style='text-align: center; margin-top: 20px;'>
+                <p>Accuracy: {accuracy:.2f}</p>
+                <p>Precision: {precision:.2f}</p>
+                <p>Recall: {recall:.2f}</p>
+                <p>F1 Score: {f1:.2f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col_cm2:
+            st.markdown("<h4 style='color: #ff0000; text-align: center;'>Random Forest</h4>", unsafe_allow_html=True)
+            
+            fig_cm_rf = go.Figure(data=go.Heatmap(
+                z=cm_rf,
+                x=['Predicted Low GPA', 'Predicted High GPA'],
+                y=['Actual Low GPA', 'Actual High GPA'],
+                colorscale='Reds',
+                showscale=True
+            ))
+            
+            fig_cm_rf.update_layout(
+                template='plotly_dark',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                title_font_color='#ff0000',
+                xaxis_title="Predicted",
+                yaxis_title="Actual",
+                xaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
+                yaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
+                title=dict(
+                    text='Random Forest Confusion Matrix',
+                    font=dict(color='#ff0000', size=12),
+                    x=0.5,
+                    y=0.95
+                ),
+                height=500,
+                width=None,
+                autosize=True,
+                margin=dict(l=80, r=80, t=80, b=80)
+            )
+            
+            st.plotly_chart(fig_cm_rf, use_container_width=True, config={'displayModeBar': False})
+            
+            accuracy = accuracy_score(y_test, y_pred_rf)
+            precision = precision_score(y_test, y_pred_rf)
+            recall = recall_score(y_test, y_pred_rf)
+            f1 = f1_score(y_test, y_pred_rf)
+            
+            st.markdown(f"""
+            <div style='text-align: center; margin-top: 20px;'>
+                <p>Accuracy: {accuracy:.2f}</p>
+                <p>Precision: {precision:.2f}</p>
+                <p>Recall: {recall:.2f}</p>
+                <p>F1 Score: {f1:.2f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div style='background-color: rgba(0, 0, 0, 0.7); border: 1px solid #ff0000; border-radius: 10px; padding: 20px; margin: 20px;'>
+            <h4 style='color: #ff0000;'>Understanding Confusion Matrices</h4>
+            <p>These confusion matrices show how well our models predict whether a student will have a high GPA (above median) or low GPA (below median).</p>
+            <p><strong>True Positives:</strong> Students correctly predicted to have high GPA</p>
+            <p><strong>True Negatives:</strong> Students correctly predicted to have low GPA</p>
+            <p><strong>False Positives:</strong> Students incorrectly predicted to have high GPA</p>
+            <p><strong>False Negatives:</strong> Students incorrectly predicted to have low GPA</p>
+            <p>The models use features like study time, absences, parental support, tutoring, and extracurricular activities to make predictions.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("<h3 style='color: #ff0000;'>Feature Importance</h3>", unsafe_allow_html=True)
+        
+        feature_importance = pd.DataFrame({
+            'Feature': ['Study Time', 'Absences', 'Parental Support', 'Tutoring', 
+                       'Extracurricular', 'Sports', 'Music', 'Volunteering'],
+            'Importance': rf_model.feature_importances_
+        })
+        
+        feature_importance = feature_importance.sort_values('Importance', ascending=True)
+        
+        fig_importance = go.Figure(go.Bar(
+            x=feature_importance['Importance'],
+            y=feature_importance['Feature'],
+            orientation='h',
+            marker_color='#ff0000'
+        ))
+        
+        fig_importance.update_layout(
+            template='plotly_dark',
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            title=dict(
+                text='Feature Importance in GPA Prediction',
+                font=dict(color='#ff0000', size=20),
+                x=0.5,
+                y=0.95
+            ),
+            xaxis_title="Importance Score",
+            yaxis_title="Feature",
+            xaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
+            yaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
+            height=400
+        )
+        
+        st.plotly_chart(fig_importance, use_container_width=True)
+        
+        st.markdown("""
+        <div style='background-color: rgba(0, 0, 0, 0.7); border: 1px solid #ff0000; border-radius: 10px; padding: 20px; margin: 20px;'>
+            <h4 style='color: #ff0000;'>Understanding Feature Importance</h4>
+            <p>This chart shows how much each factor contributes to predicting a student's GPA:</p>
+            <p><strong>Higher bars</strong> indicate factors that have a stronger influence on GPA prediction</p>
+            <p><strong>Lower bars</strong> indicate factors that have less influence on GPA prediction</p>
+            <p>The importance scores are calculated based on how often each feature is used to split the data in the Random Forest model.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Error in model training: {str(e)}")
+else:
+    st.warning("Not enough data points to generate confusion matrices. Please adjust the filters to include more data.")
