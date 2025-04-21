@@ -8,7 +8,7 @@ To predict the **grade classification** of students based on multiple academic a
 
 ## Notebooks & Methods
 
-### `modeling.ipynb`
+### `8_Dashboard_Data.ipynb`
 This notebook contains:
 
 #### 1. **Problem Statement Definition**
