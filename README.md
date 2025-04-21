@@ -99,10 +99,4 @@ Through this project, we gained practical experience with the full machine learn
 
 ---
 
-##  Resources
 
-- GitHub Setup Video: [Visual Studio GitHub Tutorial](https://www.youtube.com/watch?v=i_23KUAEtUM)
-- Streamlit Docs: https://docs.streamlit.io/
-- Scikit-learn Docs: https://scikit-learn.org/stable/
-
----
