@@ -444,7 +444,7 @@ if len(filtered_df) > 10:
                 xaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
                 yaxis=dict(gridcolor='rgba(255,0,0,0.2)'),
                 title=dict(
-                    text='Random Forest Confusion Matrix',
+                    text='XGBoost Confusion Matrix',
                     font=dict(color='#ff0000', size=12),
                     x=0.5,
                     y=0.95
